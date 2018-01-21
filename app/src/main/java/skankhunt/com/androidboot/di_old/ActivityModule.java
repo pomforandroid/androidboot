@@ -1,10 +1,9 @@
-package skankhunt.com.androidboot.di;
+package skankhunt.com.androidboot.di_old;
 
 import android.app.Activity;
 import android.content.Context;
 
 import javax.inject.Named;
-import javax.inject.Qualifier;
 
 import dagger.Module;
 import dagger.Provides;

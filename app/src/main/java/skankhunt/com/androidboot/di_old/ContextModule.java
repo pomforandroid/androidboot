@@ -1,4 +1,4 @@
-package skankhunt.com.androidboot.di;
+package skankhunt.com.androidboot.di_old;
 
 import android.content.Context;
 

@@ -1,9 +1,4 @@
-package skankhunt.com.androidboot.di;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import javax.inject.Inject;
+package skankhunt.com.androidboot.di_old;
 
 import dagger.Module;
 import dagger.Provides;

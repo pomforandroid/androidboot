@@ -6,12 +6,11 @@ import android.util.Log;
 
 import javax.inject.Inject;
 
-import skankhunt.com.androidboot.di.ContextModule;
-import skankhunt.com.androidboot.di.DaggerGithubApplicationComponet;
-import skankhunt.com.androidboot.di.GithubApplicationComponet;
-import skankhunt.com.androidboot.di.GithubService;
-import skankhunt.com.androidboot.di.GithubServiceModule;
-import skankhunt.com.androidboot.di.NetWorkModule;
+import skankhunt.com.androidboot.dagger.AComponent;
+import skankhunt.com.androidboot.dagger.AModule;
+import skankhunt.com.androidboot.dagger.ApplicationComponent;
+import skankhunt.com.androidboot.dagger.DaggerApplicationComponent;
+
 
 /**
  * Created by skankhunt on 2018/1/19.
@@ -19,7 +18,7 @@ import skankhunt.com.androidboot.di.NetWorkModule;
 
 public class GithubApp extends Application{
 
-    private GithubApplicationComponet componet;
+    /*private GithubApplicationComponet componet;
     private GithubService githubService;
 
     public static GithubApp get(Activity activity) {
@@ -54,5 +53,33 @@ public class GithubApp extends Application{
     }
     public GithubApplicationComponet component() {
         return componet;
+    }*/
+
+    private ApplicationComponent mApplicationComponent;
+    private AComponent mAComponent;
+    private static GithubApp sApplication;
+
+    public static GithubApp getInstance() {
+        return sApplication;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        sApplication = this;
+
+        mApplicationComponent = DaggerApplicationComponent.builder().build();
+    }
+
+    public ApplicationComponent getApplicationComponent() {
+        return mApplicationComponent;
+    }
+
+    //继承
+    public AComponent getAComponent() {
+        if (mAComponent == null){
+            mAComponent = mApplicationComponent.plus(new AModule());
+        }
+        return mAComponent;
     }
 }

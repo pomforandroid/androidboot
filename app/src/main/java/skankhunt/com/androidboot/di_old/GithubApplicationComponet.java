@@ -1,6 +1,4 @@
-package skankhunt.com.androidboot.di;
-
-import javax.inject.Inject;
+package skankhunt.com.androidboot.di_old;
 
 import dagger.Component;
 

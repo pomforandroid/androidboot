@@ -1,4 +1,4 @@
-package skankhunt.com.androidboot.di;
+package skankhunt.com.androidboot.di_old;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

@@ -1,10 +1,7 @@
-package skankhunt.com.androidboot.di;
-
-import org.json.JSONObject;
+package skankhunt.com.androidboot.di_old;
 
 import retrofit2.Call;
 import retrofit2.http.POST;
-import skankhunt.com.androidboot.models.MyOrder;
 import skankhunt.com.androidboot.models.User;
 
 /**
