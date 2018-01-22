@@ -1,13 +1,19 @@
 package skankhunt.com.androidboot.models;
 
+import android.arch.persistence.room.Entity;
+import android.support.annotation.NonNull;
+
 /**
  * Created by skankhunt on 2018/1/20.
  */
-
+@Entity(primaryKeys = "id")
 public class User {
 
+    @NonNull
     private int id;
+    @NonNull
     private String name;
+    @NonNull
     private int age;
 
     public int getId() {
@@ -33,4 +39,6 @@ public class User {
     public void setAge(int age) {
         this.age = age;
     }
+
+
 }

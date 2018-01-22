@@ -1,4 +1,6 @@
-package skankhunt.com.androidboot.di_old;
+package skankhunt.com.androidboot.api;
+
+import android.arch.lifecycle.LiveData;
 
 import retrofit2.Call;
 import retrofit2.http.POST;
@@ -14,6 +16,9 @@ public interface GithubService {
 //    Call<MyOrder> getOrder( );
 
      @POST("user")
-     Call<User> getUser( );
+     LiveData<ApiResponse<User>> getUser();
+
+     @POST("user")
+     LiveData<User> getdUser();
 
 }
