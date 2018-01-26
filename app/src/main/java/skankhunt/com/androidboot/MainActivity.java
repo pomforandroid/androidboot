@@ -5,14 +5,20 @@ import android.app.Activity;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
 
+import java.util.HashMap;
+
 import javax.inject.Inject;
 
+import cn.smssdk.EventHandler;
+import cn.smssdk.SMSSDK;
+import cn.smssdk.gui.RegisterPage;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasActivityInjector;
@@ -44,7 +50,6 @@ public class MainActivity extends AppCompatActivity  implements HasSupportFragme
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         mTextView = (TextView) findViewById(R.id.tv_poetry);
         userViewModel = ViewModelProviders.of(this, viewModelFactory).get(UserViewModel.class);
         userViewModel.getUser().observe(this,userResource -> {
@@ -53,10 +58,9 @@ public class MainActivity extends AppCompatActivity  implements HasSupportFragme
             if(data!=null){
               mTextView.setText(data.getName());
             }
-
-            //mTextView.setText(data.getName());
         });
     }
+
 
     private void initView() {
 

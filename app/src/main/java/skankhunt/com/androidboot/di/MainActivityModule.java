@@ -20,10 +20,18 @@ package skankhunt.com.androidboot.di;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
+import skankhunt.com.androidboot.LoginActivity;
 import skankhunt.com.androidboot.MainActivity;
 
+/**
+ * 自动配置注解到activity
+ */
 @Module
 public abstract class MainActivityModule {
+
     @ContributesAndroidInjector(modules = FragmentBuildersModule.class)
     abstract MainActivity contributeMainActivity();
+
+    @ContributesAndroidInjector(modules = FragmentBuildersModule.class)
+    abstract LoginActivity contributeLoginActivity();
 }

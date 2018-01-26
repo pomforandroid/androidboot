@@ -1,9 +1,10 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.mob.sdk'
 
 android {
     compileSdkVersion 26
     defaultConfig {
-        applicationId "skankhunt.com.androidboot"
+        applicationId "com.swz.mobile"
         minSdkVersion 15
         targetSdkVersion 26
         versionCode 1
@@ -20,6 +21,38 @@ android {
         targetCompatibility 1.8
         sourceCompatibility 1.8
     }
+
+    signingConfigs {
+        debug {
+            keyAlias 'GDSWZ'
+            keyPassword 'swz2017'
+            storePassword 'swz2017'
+            storeFile file("../swzkey.jks")
+        }
+    }
+
+}
+
+// 在MobSDK的扩展中注册SMSSDK的相关信息
+MobSDK {
+    appKey "22fac86663cec"
+    appSecret "338e2ec430996503b42beb4a3570ba94"
+
+    ShareSDK {
+        //平台配置信息
+        devInfo {
+            Wechat {
+                appId "wxb7f9ab7fbba036e5"
+                appSecret "5e0f7a5d8a67d59552506f873047a5ab"
+            }
+            QQ {
+                appId "1106022664"
+                appKey "dX9yVoSmVjUvieVs"
+            }
+        }
+    }
+
+    SMSSDK {}
 }
 
 dependencies {
@@ -27,6 +60,7 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     implementation 'com.android.support:support-v4:26.1.0'
+    implementation 'com.android.support:design:26.1.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
@@ -71,7 +105,6 @@ dependencies {
 
     //timber log
     implementation 'com.jakewharton.timber:timber:4.6.0'
-
 
 
 }
