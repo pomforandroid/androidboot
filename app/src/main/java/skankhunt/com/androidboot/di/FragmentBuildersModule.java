@@ -18,9 +18,21 @@ package skankhunt.com.androidboot.di;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
+import skankhunt.com.androidboot.ui.login.LoginFragment;
+import skankhunt.com.androidboot.ui.main.MainFragment;
 
+/**
+ * fragment自动配置注解
+ */
 @Module
 public abstract class FragmentBuildersModule {
+
+    @ContributesAndroidInjector
+    abstract LoginFragment contributeLoginFragment();
+
+    @ContributesAndroidInjector
+    abstract MainFragment contributeMainFragment();
+
    /* @ContributesAndroidInjector
     abstract RepoFragment contributeRepoFragment();
 

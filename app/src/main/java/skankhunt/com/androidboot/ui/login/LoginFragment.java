@@ -1,16 +1,17 @@
-package skankhunt.com.androidboot;
+package skankhunt.com.androidboot.ui.login;
+
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -22,6 +23,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import cn.sharesdk.framework.Platform;
 import cn.sharesdk.framework.PlatformActionListener;
 import cn.sharesdk.framework.ShareSDK;
@@ -29,14 +31,22 @@ import cn.sharesdk.tencent.qq.QQ;
 import cn.sharesdk.wechat.friends.Wechat;
 import cn.smssdk.EventHandler;
 import cn.smssdk.SMSSDK;
-import cn.smssdk.gui.RegisterPage;
-import dagger.android.AndroidInjector;
-import dagger.android.support.HasSupportFragmentInjector;
+import skankhunt.com.androidboot.LoginActivity;
+import skankhunt.com.androidboot.OldMainActivity;
+import skankhunt.com.androidboot.R;
+import skankhunt.com.androidboot.di.Injectable;
 import skankhunt.com.androidboot.ui.LiveDataTimerViewModel;
+import skankhunt.com.androidboot.ui.common.NavigationController;
 import skankhunt.com.androidboot.util.Util;
+import skankhunt.com.androidboot.vo.Login;
 import timber.log.Timber;
 
-public class LoginActivity extends AppCompatActivity implements HasSupportFragmentInjector, PlatformActionListener {
+/**
+ * A simple {@link Fragment} subclass.
+ * Use the {@link LoginFragment#newInstance} factory method to
+ * create an instance of this fragment.
+ */
+public class LoginFragment extends Fragment implements Injectable, PlatformActionListener {
 
     @BindView(R.id.et_username)
     EditText etUsername;
@@ -50,20 +60,49 @@ public class LoginActivity extends AppCompatActivity implements HasSupportFragme
     ImageView ivQq;
     @BindView(R.id.tv_sendcode)
     TextView tvSendcode;
+    Unbinder unbinder;
 
     @Inject
     ViewModelProvider.Factory viewModelFactory;
     private LiveDataTimerViewModel liveDataTimerViewModel;
     private String usernmae;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-        ButterKnife.bind(this);
+    @Inject
+    NavigationController navigationController;
+    private LoginViewModel loginViewModel;
 
+    public LoginFragment() {
+        // Required empty public constructor
+    }
+
+    public static LoginFragment newInstance() {
+        LoginFragment fragment = new LoginFragment();
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_login, container, false);
+        unbinder = ButterKnife.bind(this, view);
+        return view;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         //计时器
         liveDataTimerViewModel = ViewModelProviders.of(this, viewModelFactory).get(LiveDataTimerViewModel.class);
+        loginViewModel = ViewModelProviders.of(this, viewModelFactory).get(LoginViewModel.class);
+
+        subcribe_login();
 
         //发送验证码
         tvSendcode.setOnClickListener(new View.OnClickListener() {
@@ -98,6 +137,27 @@ public class LoginActivity extends AppCompatActivity implements HasSupportFragme
         });
     }
 
+    //
+    private void subcribe_login() {
+
+        loginViewModel.getMyLogin().observe(this, new Observer<Login>() {
+            @Override
+            public void onChanged(@Nullable Login login) {
+                if(login!=null){
+                    boolean loginState = login.loginState;
+                    String loginType = login.loginType;
+                    if(loginState){
+                        navigationController.navigateToMain();
+                    }else{
+                        navigationController.navigateToLogin();
+                    }
+                }
+            }
+        });
+
+    }
+
+
     private void wechatLogin() {
         Platform weixin = ShareSDK.getPlatform(Wechat.NAME);
 //回调信息，可以在这里获取基本的授权返回的信息，但是注意如果做提示和UI操作要传到主线程handler里去执行
@@ -129,7 +189,7 @@ public class LoginActivity extends AppCompatActivity implements HasSupportFragme
             public void onChanged(@Nullable Long aLong) {
 
                 if(aLong!=null){
-                    String newText = LoginActivity.this.getResources().getString(
+                    String newText = getContext().getResources().getString(
                             R.string.send_code_again, aLong);
                     tvSendcode.setText(newText);
                     if(aLong==0){
@@ -138,7 +198,7 @@ public class LoginActivity extends AppCompatActivity implements HasSupportFragme
                         tvSendcode.setOnClickListener(view ->
                                 //subscribe_count()
                                 getSmsCode()
-                                );
+                        );
                     }
                 }
             }
@@ -194,9 +254,10 @@ public class LoginActivity extends AppCompatActivity implements HasSupportFragme
                 if (result == SMSSDK.RESULT_COMPLETE) {
                     // TODO 处理验证成功的结果
                     Util.showSnackbar(etPassword,getString(R.string.login_success));
-                    Intent intent = new Intent(LoginActivity.this,OldMainActivity.class);
-                    startActivity(intent);
-                    finish();
+                    //登陆成功去main
+                    //navigationController.navigateToMain();
+                    Login login = new Login("phone", true);
+                    loginViewModel.setMyLogin(login);
                 } else {
                     // TODO 处理错误的结果
                     Util.showSnackbar(etPassword,getString(R.string.login_fail));
@@ -221,42 +282,12 @@ public class LoginActivity extends AppCompatActivity implements HasSupportFragme
 
 
     }
-
-
-    protected void onDestroy() {
-        super.onDestroy();
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
         //用完回调要注销掉，否则可能会出现内存泄露
         SMSSDK.unregisterAllEventHandler();
-    }
-
-    /**
-     * 以可视化界面完成操作,这里用不到，先备份着
-     *
-     * @param context
-     */
-    public void sendCode_ui(Context context) {
-        RegisterPage page = new RegisterPage();
-        page.setRegisterCallback(new EventHandler() {
-            public void afterEvent(int event, int result, Object data) {
-                if (result == SMSSDK.RESULT_COMPLETE) {
-                    // 处理成功的结果
-                    HashMap<String, Object> phoneMap = (HashMap<String, Object>) data;
-                    String country = (String) phoneMap.get("country"); // 国家代码，如“86”
-                    String phone = (String) phoneMap.get("phone"); // 手机号码，如“13800138000”
-                    // TODO 利用国家代码和手机号码进行后续的操作
-                } else {
-                    // TODO 处理错误的结果
-                }
-            }
-        });
-        page.show(context);
-    }
-
-    //微信登陆
-
-    @Override
-    public AndroidInjector<Fragment> supportFragmentInjector() {
-        return null;
+        unbinder.unbind();
     }
 
     @Override
@@ -264,8 +295,9 @@ public class LoginActivity extends AppCompatActivity implements HasSupportFragme
         //输出所有授权信息
         String s = platform.getDb().exportData();
         Timber.w("skankhunt  %s", s);
-        Intent intent = new Intent(LoginActivity.this,OldMainActivity.class);
-        startActivity(intent);
+        //navigationController.navigateToMain();
+        Login login = new Login("qq_wechat", true);
+        loginViewModel.setMyLogin(login);
     }
 
     @Override

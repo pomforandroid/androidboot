@@ -16,21 +16,27 @@
 
 package skankhunt.com.androidboot.db;
 
-
-import android.arch.persistence.room.Database;
-import android.arch.persistence.room.RoomDatabase;
+import android.arch.lifecycle.LiveData;
+import android.arch.persistence.room.Dao;
+import android.arch.persistence.room.Insert;
+import android.arch.persistence.room.OnConflictStrategy;
+import android.arch.persistence.room.Query;
 
 import skankhunt.com.androidboot.models.User;
 import skankhunt.com.androidboot.vo.Login;
 
 
 /**
- * Main database description.
+ * Interface for database access for User related operations.
  */
-@Database(entities ={User.class, Login.class}, version = 4)
-public abstract class GithubDb extends RoomDatabase {
+@Dao
+public interface LoginDao {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insert(Login login);
 
-    abstract public UserDao userDao();
+//    @Query("SELECT * FROM user WHERE login = :login")
+//    LiveData<User> findByLogin(String login);
 
-    abstract public LoginDao loginDao();
+    @Query("SELECT * FROM login")
+    LiveData<Login> findByLogin();
 }

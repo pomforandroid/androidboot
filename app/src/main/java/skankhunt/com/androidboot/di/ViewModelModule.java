@@ -11,6 +11,7 @@ import dagger.multibindings.IntoMap;
 import skankhunt.com.androidboot.ViewModel.GithubViewModelFactory;
 import skankhunt.com.androidboot.ui.LiveDataTimerViewModel;
 import skankhunt.com.androidboot.ui.UserViewModel;
+import skankhunt.com.androidboot.ui.login.LoginViewModel;
 
 @Module
 abstract class ViewModelModule {
@@ -24,6 +25,11 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(LiveDataTimerViewModel.class)
     abstract ViewModel bindLiveDataTimerViewModel(LiveDataTimerViewModel liveDataTimerViewModel);
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(LoginViewModel.class)
+    abstract ViewModel bindLoginViewModel(LoginViewModel loginViewModel);
    /* @Binds
     @IntoMap
     @ViewModelKey(UserViewModel.class)

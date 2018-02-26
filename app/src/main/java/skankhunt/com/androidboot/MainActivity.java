@@ -1,79 +1,100 @@
 package skankhunt.com.androidboot;
 
-
-import android.app.Activity;
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.TextView;
-
-import java.util.HashMap;
 
 import javax.inject.Inject;
 
-import cn.smssdk.EventHandler;
-import cn.smssdk.SMSSDK;
-import cn.smssdk.gui.RegisterPage;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
-import dagger.android.HasActivityInjector;
 import dagger.android.support.HasSupportFragmentInjector;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import skankhunt.com.androidboot.api.GithubService;
-import skankhunt.com.androidboot.di.Injectable;
+import skankhunt.com.androidboot.db.LoginDao;
 import skankhunt.com.androidboot.models.User;
-import skankhunt.com.androidboot.ui.UserViewModel;
-import skankhunt.com.androidboot.vo.Resource;
-import timber.log.Timber;
+import skankhunt.com.androidboot.ui.common.NavigationController;
+import skankhunt.com.androidboot.ui.login.LoginViewModel;
+import skankhunt.com.androidboot.vo.Login;
 
-public class MainActivity extends AppCompatActivity  implements HasSupportFragmentInjector {
+public class MainActivity extends AppCompatActivity implements HasSupportFragmentInjector {
 
-    private TextView mTextView;
+    @Inject
+    DispatchingAndroidInjector<Fragment> dispatchingAndroidInjector;
 
-//    @Inject
-//    GithubService githubService;
+    @Inject
+    NavigationController navigationController;
 
     @Inject
     ViewModelProvider.Factory viewModelFactory;
+    private LoginViewModel loginViewModel;
 
-    private UserViewModel userViewModel;
+    @Inject
+    LoginDao loginDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mTextView = (TextView) findViewById(R.id.tv_poetry);
-        userViewModel = ViewModelProviders.of(this, viewModelFactory).get(UserViewModel.class);
-        userViewModel.getUser().observe(this,userResource -> {
-            User data = userResource.data;
-            //一定要判断是否为null
-            if(data!=null){
-              mTextView.setText(data.getName());
-            }
-        });
+        if (savedInstanceState == null) {
+            loginViewModel = ViewModelProviders.of(this, viewModelFactory).get(LoginViewModel.class);
+
+            loginViewModel.getLoginByDao().observe(this, new Observer<Login>() {
+                @Override
+                public void onChanged(@Nullable Login login) {
+                    if(login!=null){
+                        boolean loginState = login.loginState;
+                        if(loginState){
+                            navigationController.navigateToMain();
+                        }else{
+                            navigationController.navigateToLogin();
+                        }
+                    }else {
+                        navigationController.navigateToLogin();
+                    }
+                }
+            });
+
+
+//            loginViewModel.getLoginByDao().observe(this, new Observer<Login>() {
+//                @Override
+//                public void onChanged(@Nullable Login login) {
+//                    if(login!=null){
+//                        boolean loginState = login.loginState;
+//                        if(loginState){
+//                            navigationController.navigateToMain();
+//                        }else {
+//                            navigationController.navigateToLogin();
+//                        }
+//                    }
+//                }
+//            });
+
+        }/*else {
+            loginViewModel = ViewModelProviders.of(this, viewModelFactory).get(LoginViewModel.class);
+            loginViewModel.getIsLogin().observe(this, new Observer<Boolean>() {
+                @Override
+                public void onChanged(@Nullable Boolean aBoolean) {
+                    if(aBoolean!=null){
+                        if(aBoolean){
+                            navigationController.navigateToMain();
+                        }else {
+                            navigationController.navigateToLogin();
+                        }
+                    }else{
+                        navigationController.navigateToLogin();
+                    }
+                }
+            });
+        }*/
     }
-
-
-    private void initView() {
-
-
-
-    }
-
-//    @Inject
-//    DispatchingAndroidInjector<Fragment> dispatchingAndroidInjector;
-
 
     @Override
     public AndroidInjector<Fragment> supportFragmentInjector() {
-        return null;
+        return dispatchingAndroidInjector;
     }
 }

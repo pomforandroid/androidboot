@@ -22,12 +22,16 @@ import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
 import skankhunt.com.androidboot.LoginActivity;
 import skankhunt.com.androidboot.MainActivity;
+import skankhunt.com.androidboot.OldMainActivity;
 
 /**
  * 自动配置注解到activity
  */
 @Module
 public abstract class MainActivityModule {
+
+    @ContributesAndroidInjector(modules = FragmentBuildersModule.class)
+    abstract OldMainActivity contributeOldMainActivity();
 
     @ContributesAndroidInjector(modules = FragmentBuildersModule.class)
     abstract MainActivity contributeMainActivity();

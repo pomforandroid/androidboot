@@ -46,7 +46,7 @@
 
 
     <FrameLayout
-        android:id="@+id/container"
+        android:id="@+id/main_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/bottom_navi"
@@ -58,7 +58,6 @@
     </FrameLayout>
 
     <android.support.design.widget.BottomNavigationView
-        android:visibility="gone"
         android:id="@+id/bottom_navi"
         android:layout_width="0dp"
         android:layout_height="48dp"

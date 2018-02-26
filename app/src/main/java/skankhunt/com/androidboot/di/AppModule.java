@@ -29,6 +29,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import skankhunt.com.androidboot.api.GithubService;
 import skankhunt.com.androidboot.db.GithubDb;
+import skankhunt.com.androidboot.db.LoginDao;
 import skankhunt.com.androidboot.db.UserDao;
 import skankhunt.com.androidboot.util.LiveDataCallAdapterFactory;
 
@@ -46,11 +47,18 @@ class AppModule {
 
     @Singleton @Provides
     GithubDb provideDb(Application app) {
-        return Room.databaseBuilder(app, GithubDb.class,"github.db").build();
+        return Room.databaseBuilder(app, GithubDb.class,"github.db")
+                .fallbackToDestructiveMigration() //更新版本后清空数据库
+                .build();
     }
     @Singleton @Provides
     UserDao provideUserDao(GithubDb db) {
         return db.userDao();
+    }
+
+    @Singleton @Provides
+    LoginDao provideLoginDao(GithubDb db) {
+        return db.loginDao();
     }
 
    /* @Singleton @Provides
